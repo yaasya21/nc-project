@@ -70,3 +70,26 @@ describe("GET /api/articles/:article_id", () => {
     return request(server).get("/api/articles/567567").expect(404);
   });
 });
+
+describe("GET /api/articles", () => {
+  test("200: Responds with array of article objects", () => {
+    return request(server)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+
+        articles.forEach((article) => {
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.title).toBe("string");
+          expect(Number.isFinite(article.article_id)).toBe(true);
+          expect(Number.isFinite(article.votes)).toBe(true);
+          expect(typeof article.topic).toBe("string");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.article_img_url).toBe("string");
+        });
+
+        expect(articles[0].created_at > articles[1].created_at).toBe(true);
+      });
+  });
+});

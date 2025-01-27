@@ -2,13 +2,14 @@ const express = require("express");
 const server = express();
 const { getApi } = require("./controllers/api.controller");
 const { getTopics } = require("./controllers/topics.controller");
-const { getArticleById } = require("./controllers/articles.controller");
+const { getArticleById, getArticles } = require("./controllers/articles.controller");
 
 server.use(express.json());
 
 server.get("/api", getApi);
 server.get("/api/topics", getTopics);
 server.get("/api/articles/:article_id", getArticleById);
+server.get("/api/articles", getArticles);
 
 server.use((err, req, res, next) => {
   if (err.code === "22P02") {
