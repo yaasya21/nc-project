@@ -41,8 +41,8 @@ The following is _not_ a comprehensive list! Its purpose is just to get the ball
 
 ### GET `/api/articles/:article_id`
 
-- Bad `article_id` (e.g. `/dog`)
-- Well formed `article_id` that doesn't exist in the database (e.g. `/999999`)
+- Bad `article_id` (e.g. `/dog`) -- 400 Bad Request
+- Well formed `article_id` that doesn't exist in the database (e.g. `/999999`) -- 404 Not Found
 
 ### PATCH `/api/articles/:article_id`
 
