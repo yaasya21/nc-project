@@ -7,13 +7,13 @@
 ```
 .env.test
 ___________________
-PGDATABASE=nc_snacks_test
+PGDATABASE=<your_test_database_name_here>
 ```
 
 ```
 .env.development
 ____________________
-PGDATABASE=nc_snacks
+PGDATABASE=<your_database_name_here>
 ```
 
 3. Make sure you create your databases with the command `npm run setup-dbs`

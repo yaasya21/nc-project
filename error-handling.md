@@ -33,7 +33,7 @@ The following is _not_ a comprehensive list! Its purpose is just to get the ball
 
 ### GET `/not-a-route`
 
-- Status: ???
+- Invalid (e.g. `/api-get-topics`) -- 404 Not Found
 
 ---
 
