@@ -277,3 +277,26 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: No content", () => {
+    return request(server).delete("/api/comments/2").expect(204);
+  });
+
+  test("400: Responds with an error when an id is bad request", () => {
+    return request(server)
+      .delete("/api/comments/two")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+
+  test("404: Responds with an error when an article with such an id is not found", () => {
+    return request(server)
+      .delete("/api/comments/9999")
+      .then((response) => {
+        expect(response.body.msg).toBe("Comment ID not found");
+      });
+  });
+});

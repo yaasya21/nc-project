@@ -1,5 +1,8 @@
 const db = require("../db/connection");
-const { checkArticleExists } = require("../utils/checkIfExists");
+const {
+  checkArticleExists,
+  checkCommentExists,
+} = require("../utils/checkIfExists");
 
 exports.selectCommentsByArticleId = (article_id) => {
   return checkArticleExists(article_id)
@@ -24,4 +27,10 @@ exports.insertComment = (article_id, { username, body }) => {
     .then(({ rows }) => {
       return rows[0];
     });
+};
+
+exports.removeComment = (comment_id) => {
+  return checkCommentExists(comment_id).then(() => {
+    return db.query("DELETE FROM comments WHERE comment_id = $1", [comment_id]);
+  });
 };
