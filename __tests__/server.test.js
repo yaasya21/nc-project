@@ -62,11 +62,21 @@ describe("GET /api/articles/:article_id", () => {
   });
 
   test("400: Responds with an error when an id is bad request", () => {
-    return request(server).get("/api/articles/two").expect(400);
+    return request(server)
+      .get("/api/articles/two")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
   });
 
   test("404: Responds with an error when an article with such an id is not found", () => {
-    return request(server).get("/api/articles/567567").expect(404);
+    return request(server)
+      .get("/api/articles/567567")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article ID not found");
+      });
   });
 });
 
@@ -128,11 +138,21 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 
   test("400: Responds with an error when an id is bad request", () => {
-    return request(server).get("/api/articles/three/comments").expect(400);
+    return request(server)
+      .get("/api/articles/three/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
   });
 
   test("404: Responds with an error when an article with such an id is not found", () => {
-    return request(server).get("/api/articles/3456467/comments").expect(404);
+    return request(server)
+      .get("/api/articles/3456467/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article ID not found");
+      });
   });
 
   test("200: Responds with an emty array when the article exists but has not comments", () => {
@@ -179,20 +199,81 @@ describe("POST /api/articles/:article_id/comments", () => {
     return request(server)
       .post("/api/articles/two/comments")
       .send({ username: "icellusedkars", body: "Hmmm... Interesting..." })
-      .expect(400);
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
   });
 
   test("400: Responds with an error when a user does not exist", () => {
     return request(server)
       .post("/api/articles/two/comments")
       .send({ username: "icecream_lover", body: "Hmmm... Interesting..." })
-      .expect(400);
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
   });
 
   test("404: Responds with an error when an article with such an id is not found", () => {
     return request(server)
       .post("/api/articles/868/comments")
       .send({ username: "icellusedkars", body: "Hmmm... Interesting..." })
-      .expect(404);
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article ID not found");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: Responds with an updated article", () => {
+    return request(server)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -100 })
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          votes: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+
+  test("400: Responds with an appropriate status and error message when provided with a bad inc_votes", () => {
+    return request(server)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "cat" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+
+  test("400: Responds with an error when an id is bad request", () => {
+    return request(server)
+      .patch("/api/articles/one")
+      .send({ inc_votes: -100 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+
+  test("404: Responds with an error when an article with such an id is not found", () => {
+    return request(server)
+      .patch("/api/articles/567")
+      .send({ inc_votes: -100 })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article ID not found");
+      });
   });
 });

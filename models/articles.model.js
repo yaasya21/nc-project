@@ -1,14 +1,15 @@
 const db = require("../db/connection");
+const { checkArticleExists } = require("../utils/checkIfExists");
 
 exports.selectArticleById = (article_id) => {
-  return db
-    .query("SELECT * FROM articles WHERE article_id = $1;", [article_id])
-    .then((result) => {
-      if (result.rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "valid but non-existent id" });
-      } else {
-        return result.rows[0];
-      }
+  return checkArticleExists(article_id)
+    .then(() => {
+      return db.query("SELECT * FROM articles WHERE article_id = $1;", [
+        article_id,
+      ]);
+    })
+    .then(({ rows }) => {
+      return rows[0];
     });
 };
 
@@ -19,5 +20,18 @@ exports.selectArticles = () => {
     )
     .then((result) => {
       return result.rows;
+    });
+};
+
+exports.updateArticle = (article_id, newVote) => {
+  return checkArticleExists(article_id)
+    .then(() => {
+      return db.query(
+        "UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *;",
+        [newVote, article_id]
+      );
+    })
+    .then(({ rows }) => { 
+      return rows[0];
     });
 };
