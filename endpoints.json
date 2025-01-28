@@ -89,5 +89,10 @@
         "votes": 0
       }
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes a comment with a particular id",
+    "queries": [],
+    "exampleResponse": {}
   }
 }

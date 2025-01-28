@@ -71,8 +71,9 @@ The following is _not_ a comprehensive list! Its purpose is just to get the ball
 
 ### PATCH `/api/comments/:comment_id`
 
-- ???
+??
 
 ### DELETE `/api/comments/:comment_id`
 
-- ???
+- Bad `comment_id` (e.g. `/dog`) -- 400 Bad Request
+- Well formed `:comment_id` that doesn't exist in the database (e.g. `/999999`) -- 404 Not Found
