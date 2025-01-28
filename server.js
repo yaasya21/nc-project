@@ -2,7 +2,11 @@ const express = require("express");
 const server = express();
 const { getApi } = require("./controllers/api.controller");
 const { getTopics } = require("./controllers/topics.controller");
-const { getArticleById, getArticles } = require("./controllers/articles.controller");
+const {
+  getArticleById,
+  getArticles,
+} = require("./controllers/articles.controller");
+const { getCommentsByArticleId } = require("./controllers/comments.controller");
 
 server.use(express.json());
 
@@ -10,6 +14,7 @@ server.get("/api", getApi);
 server.get("/api/topics", getTopics);
 server.get("/api/articles/:article_id", getArticleById);
 server.get("/api/articles", getArticles);
+server.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 server.use((err, req, res, next) => {
   if (err.code === "22P02") {
@@ -20,13 +25,16 @@ server.use((err, req, res, next) => {
 });
 
 server.use((err, req, res, next) => {
-  if (err.msg === "valid but non-existent id") {
-    res
-      .status(404)
-      .send({ msg: "requested object with a such id does not exist" });
+  if (err.status && err.msg) {
+    res.status(err.status).send({ error: err.msg });
   } else {
     next(err);
   }
+});
+
+server.use((err, req, res, next) => {
+  console.log(err, " <-- This error is not handled yet");
+  res.status(500).send({ error: "Internal Server Error" });
 });
 
 module.exports = server;
