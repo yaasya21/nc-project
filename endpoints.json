@@ -60,6 +60,7 @@
   "POST  /api/articles/:article_id/comments": {
     "description": "adds a comment with a particular article id",
     "queries": [],
+    "exampleRequest": { "username": "icellusedkars", "body": "Hmmm... Interesting..." }, 
     "exampleResponse": {
       "comment": {
         "comment_id": 19,
@@ -68,6 +69,24 @@
           "author": "icellusedkars",
           "body": "Hmmm... Interesting...",
           "article_id": 2
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "serves an updated article with a particular id",
+    "queries": [],
+    "exampleRequest": { "inc_votes": -100 }, 
+    "exampleResponse": {
+      "article": {
+        "article_id": 2,
+        "title": "They're not exactly dogs, are they?",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "Well? Think about it.",
+        "created_at": 1591438200000,
+        "article_img_url":
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "votes": 0
       }
     }
   }

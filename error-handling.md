@@ -46,9 +46,9 @@ The following is _not_ a comprehensive list! Its purpose is just to get the ball
 
 ### PATCH `/api/articles/:article_id`
 
-- Bad `article_id` (e.g. `/dog`)
-- Well formed `article_id` that doesn't exist in the database (e.g. `/999999`)
-- Invalid `inc_votes` (e.g. `{ inc_votes : "cat" }`)
+- Bad `article_id` (e.g. `/dog`) -- 400 Bad Request
+- Well formed `article_id` that doesn't exist in the database (e.g. `/999999`) -- 404 Not Found
+- Invalid `inc_votes` (e.g. `{ inc_votes : "cat" }`) -- 400 Bad Request
 
 ### POST `/api/articles/:article_id/comments`
 
