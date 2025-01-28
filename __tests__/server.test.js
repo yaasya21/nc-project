@@ -116,7 +116,7 @@ describe("GET /api/articles/:article_id/comments", () => {
             created_at: expect.any(String),
             author: expect.any(String),
             body: expect.any(String),
-            article_id: expect.any(Number),
+            article_id: 3,
           });
         });
 
@@ -136,8 +136,63 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 
   test("200: Responds with an emty array when the article exists but has not comments", () => {
-    return request(server).get("/api/articles/2/comments").expect(200).then(({ body: { comments } }) => {
-      expect(comments).toEqual([]);
-    });
+    return request(server)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toEqual([]);
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: Responds with the posted comment", () => {
+    return request(server)
+      .post("/api/articles/2/comments")
+      .send({ username: "icellusedkars", body: "Hmmm... Interesting..." })
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          votes: 0,
+          created_at: expect.any(String),
+          author: "icellusedkars",
+          body: "Hmmm... Interesting...",
+          article_id: 2,
+        });
+      });
+  });
+
+  test("POST:400 responds with an appropriate status and error message when provided with a bad comment (no usename)", () => {
+    return request(server)
+      .post("/api/articles/4/comments")
+      .send({
+        body: "Hmmm... Interesting...",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+
+  test("400: Responds with an error when an id is bad request", () => {
+    return request(server)
+      .post("/api/articles/two/comments")
+      .send({ username: "icellusedkars", body: "Hmmm... Interesting..." })
+      .expect(400);
+  });
+
+  test("400: Responds with an error when a user does not exist", () => {
+    return request(server)
+      .post("/api/articles/two/comments")
+      .send({ username: "icecream_lover", body: "Hmmm... Interesting..." })
+      .expect(400);
+  });
+
+  test("404: Responds with an error when an article with such an id is not found", () => {
+    return request(server)
+      .post("/api/articles/868/comments")
+      .send({ username: "icellusedkars", body: "Hmmm... Interesting..." })
+      .expect(404);
   });
 });

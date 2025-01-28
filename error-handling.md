@@ -52,7 +52,9 @@ The following is _not_ a comprehensive list! Its purpose is just to get the ball
 
 ### POST `/api/articles/:article_id/comments`
 
-- ???
+- Bad `article_id` (e.g. `/dog`) -- 400 Bad Request
+- Well formed `article_id` that doesn't exist in the database (e.g. `/999999`) -- 404 Not Found
+- Missing parts of body -- 400 Bad Request
 
 ### GET `/api/articles/:article_id/comments`
 
