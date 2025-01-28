@@ -3,6 +3,7 @@ const {
   createRef,
   formatComments,
 } = require("../db/seeds/utils");
+const { checkArticleExists } = require("../utils/checkIfExists");
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -100,5 +101,17 @@ describe("formatComments", () => {
     const comments = [{ created_at: timestamp }];
     const formattedComments = formatComments(comments, {});
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
+  });
+});
+
+describe("checkArticleExists", () => {
+  test("should reject if the article does not exist", () => {
+    return expect(checkArticleExists(55)).rejects.toMatchObject({
+      status: 404,
+      msg: "Article ID not found",
+    });
+  });
+  test("should resolve if the article exists", () => {
+    return expect(checkArticleExists(1)).resolves.toHaveLength(1);
   });
 });

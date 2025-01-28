@@ -100,3 +100,44 @@ describe("GET /api/articles", () => {
       });
   });
 });
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: Responds with an array of comment objects for the given article_id", () => {
+    return request(server)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.length).toBe(2);
+
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
+        });
+
+        const sortedComments = [...comments].sort(
+          (a, b) => a.created_at - b.created_at
+        );
+        expect(comments).toEqual(sortedComments);
+      });
+  });
+
+  test("400: Responds with an error when an id is bad request", () => {
+    return request(server).get("/api/articles/three/comments").expect(400);
+  });
+
+  test("404: Responds with an error when an article with such an id is not found", () => {
+    return request(server).get("/api/articles/3456467/comments").expect(404);
+  });
+
+  test("200: Responds with an emty array when the article exists but has not comments", () => {
+    return request(server).get("/api/articles/2/comments").expect(200).then(({ body: { comments } }) => {
+      expect(comments).toEqual([]);
+    });
+  });
+});

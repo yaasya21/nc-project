@@ -6,6 +6,7 @@ const {
   getArticleById,
   getArticles,
 } = require("./controllers/articles.controller");
+const { getCommentsByArticleId } = require("./controllers/comments.controller");
 
 server.use(express.json());
 
@@ -13,6 +14,7 @@ server.get("/api", getApi);
 server.get("/api/topics", getTopics);
 server.get("/api/articles/:article_id", getArticleById);
 server.get("/api/articles", getArticles);
+server.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 server.use((err, req, res, next) => {
   if (err.code === "22P02") {
