@@ -2,6 +2,7 @@ const express = require("express");
 const server = express();
 const { getApi } = require("./controllers/api.controller");
 const { getTopics } = require("./controllers/topics.controller");
+const { getUsers } = require("./controllers/users.controller");
 const {
   getArticleById,
   getArticles,
@@ -17,6 +18,7 @@ server.use(express.json());
 
 server.get("/api", getApi);
 server.get("/api/topics", getTopics);
+server.get("/api/users", getUsers);
 server.get("/api/articles/:article_id", getArticleById);
 server.get("/api/articles", getArticles);
 server.get("/api/articles/:article_id/comments", getCommentsByArticleId);
