@@ -13,7 +13,11 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.selectArticles = (sortBy = "created_at", order = "desc") => {
+exports.selectArticles = (
+  sortBy = "created_at",
+  order = "desc",
+  topic = null
+) => {
   const validSortBy = ["author", "title", "topic", "created_at", "votes"];
   const validOrder = ["asc", "desc"];
   if (!validSortBy.includes(sortBy.toLowerCase())) {
@@ -28,21 +32,28 @@ exports.selectArticles = (sortBy = "created_at", order = "desc") => {
       msg: `Invalid order parameter: ${order}`,
     });
   }
+  const orderByClause = `a.${sortBy} ${order}`;
+  let query = `SELECT a.author, a.title, a.article_id, a.topic, a.created_at, a.votes, a.article_img_url, COUNT(*) AS comment_count FROM articles AS a LEFT JOIN comments AS c ON a.article_id=c.article_id`;
 
-  const orderByClause = `ORDER BY a.${sortBy} ${order}`;
+  if (topic) {
+    query += ` WHERE a.topic = $1`;
+  }
 
-  return db
-    .query(
-      `SELECT a.author, a.title, a.article_id, a.topic, a.created_at, a.votes, a.article_img_url, 
-              COUNT(c.comment_id) AS comment_count 
-       FROM articles AS a 
-       LEFT JOIN comments AS c ON a.article_id = c.article_id 
-       GROUP BY a.article_id 
-       ${orderByClause};`
-    )
-    .then(({ rows }) => {
+  query += ` GROUP BY a.article_id ORDER BY ${orderByClause}`;
+
+  if (topic) {
+    return checkIfExists(topic, "topics", "slug")
+      .then(() => {
+        return db.query(query, [topic]);
+      })
+      .then(({ rows }) => {
+        return rows;
+      });
+  } else {
+    return db.query(query).then(({ rows }) => {
       return rows;
     });
+  }
 };
 
 exports.updateArticle = (article_id, newVote) => {

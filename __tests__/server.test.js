@@ -109,7 +109,7 @@ describe("GET /api/articles", () => {
         expect(articles).toEqual(sortedArticles);
       });
   });
-  test("GET /api/articles: sorts by title in ascending order", () => {
+  test("200: Sorts by title in ascending order", () => {
     return request(server)
       .get("/api/articles?sort_by=title&order=asc")
       .expect(200)
@@ -120,7 +120,7 @@ describe("GET /api/articles", () => {
         expect(articles).toEqual(sortedArticles);
       });
   });
-  test("GET /api/articles: sorts by title in descending order (default)", () => {
+  test("200: Sorts by title in descending order (default)", () => {
     return request(server)
       .get("/api/articles?sort_by=title")
       .expect(200)
@@ -131,7 +131,7 @@ describe("GET /api/articles", () => {
         expect(articles).toEqual(sortedArticles);
       });
   });
-  test("GET /api/articles: handles invalid sort_by parameter", () => {
+  test("400: esponds with an error for invalid sort_by", () => {
     return request(server)
       .get("/api/articles?sort_by=invalid")
       .expect(400)
@@ -145,6 +145,32 @@ describe("GET /api/articles", () => {
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toMatch("Invalid order parameter");
+      });
+  });
+  test("200: Should return articles for a valid topic", () => {
+    return request(server)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(
+          articles.every((article) => article.topic === "mitch")
+        ).toBeTruthy();
+      });
+  });
+  test("200: Should return empty array for a topic with no articles", () => {
+    return request(server)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(0);
+      });
+  });
+  test("404: Should return an error for a non-existent topic", () => {
+    return request(server)
+      .get("/api/articles?topic=science")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("slug not found");
       });
   });
 });
@@ -240,7 +266,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 
-  test("POST:400 responds with an appropriate status and error message when provided with a bad comment (no usename)", () => {
+  test("400: Responds with an appropriate status and error message when provided with a bad comment (no usename)", () => {
     return request(server)
       .post("/api/articles/4/comments")
       .send({
