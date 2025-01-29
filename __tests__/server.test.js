@@ -75,7 +75,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/567567")
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("Article ID not found");
+        expect(response.body.msg).toBe("article_id not found");
       });
   });
 });
@@ -107,6 +107,44 @@ describe("GET /api/articles", () => {
           (a, b) => a.created_at - b.created_at
         );
         expect(articles).toEqual(sortedArticles);
+      });
+  });
+  test("GET /api/articles: sorts by title in ascending order", () => {
+    return request(server)
+      .get("/api/articles?sort_by=title&order=asc")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        const sortedArticles = [...articles].sort((a, b) =>
+          a.title.localeCompare(b.title)
+        );
+        expect(articles).toEqual(sortedArticles);
+      });
+  });
+  test("GET /api/articles: sorts by title in descending order (default)", () => {
+    return request(server)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        const sortedArticles = [...articles].sort((a, b) => {
+          return b.title.localeCompare(a.title);
+        });
+        expect(articles).toEqual(sortedArticles);
+      });
+  });
+  test("GET /api/articles: handles invalid sort_by parameter", () => {
+    return request(server)
+      .get("/api/articles?sort_by=invalid")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toMatch("Invalid sort_by parameter");
+      });
+  });
+  test("400: Responds with an error for invalid order", () => {
+    return request(server)
+      .get("/api/articles?order=random")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toMatch("Invalid order parameter");
       });
   });
 });
@@ -170,7 +208,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/3456467/comments")
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("Article ID not found");
+        expect(response.body.msg).toBe("article_id not found");
       });
   });
 
@@ -240,7 +278,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send({ username: "icellusedkars", body: "Hmmm... Interesting..." })
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("Article ID not found");
+        expect(response.body.msg).toBe("article_id not found");
       });
   });
 });
@@ -292,7 +330,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({ inc_votes: -100 })
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("Article ID not found");
+        expect(response.body.msg).toBe("article_id not found");
       });
   });
 });
@@ -315,7 +353,7 @@ describe("DELETE /api/comments/:comment_id", () => {
     return request(server)
       .delete("/api/comments/9999")
       .then((response) => {
-        expect(response.body.msg).toBe("Comment ID not found");
+        expect(response.body.msg).toBe("comment_id not found");
       });
   });
 });

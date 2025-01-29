@@ -63,7 +63,7 @@ The following is _not_ a comprehensive list! Its purpose is just to get the ball
 
 ### GET `/api/articles`
 
-- Bad queries:
+- Bad queries: -- 400 Bad Request
   - `sort_by` a column that doesn't exist
   - `order` !== "asc" / "desc"
   - `topic` that is not in the database

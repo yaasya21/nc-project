@@ -1,9 +1,10 @@
+const articles = require("../db/data/test-data/articles");
 const {
   convertTimestampToDate,
   createRef,
   formatComments,
 } = require("../db/seeds/utils");
-const { checkArticleExists } = require("../utils/checkIfExists");
+const { checkIfExists } = require("../utils/checkIfExists");
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -104,14 +105,14 @@ describe("formatComments", () => {
   });
 });
 
-describe("checkArticleExists", () => {
-  test("should reject if the article does not exist", () => {
-    return expect(checkArticleExists(55)).rejects.toMatchObject({
+describe("checkIfExists", () => {
+  test("should reject if an object does not exist", () => {
+    return expect(checkIfExists(55, "articles", "article_id")).rejects.toMatchObject({
       status: 404,
-      msg: "Article ID not found",
+      msg: "article_id not found",
     });
   });
-  test("should resolve if the article exists", () => {
-    return expect(checkArticleExists(1)).resolves.toHaveLength(1);
+  test("should resolve if an object exists", () => {
+    return expect(checkIfExists(1, "articles", "article_id")).resolves.toHaveLength(1);
   });
 });
