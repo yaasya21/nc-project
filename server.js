@@ -1,33 +1,18 @@
 const express = require("express");
 const server = express();
-const { getApi } = require("./controllers/api.controller");
-const { getTopics } = require("./controllers/topics.controller");
-const { getUsers } = require("./controllers/users.controller");
-const {
-  getArticleById,
-  getArticles,
-  patchArticle,
-} = require("./controllers/articles.controller");
-const {
-  getCommentsByArticleId,
-  postComments,
-  deleteComment
-} = require("./controllers/comments.controller");
+const apiRoutes = require("./routes/api-router");
+const topicsRoutes = require("./routes/topics-router");
+const usersRoutes = require("./routes/users-router");
+const articlesRoutes = require("./routes/articles-router");
+const commentsRoutes = require("./routes/comments-router");
 
 server.use(express.json());
 
-server.get("/api", getApi);
-server.get("/api/topics", getTopics);
-server.get("/api/users", getUsers);
-server.get("/api/articles/:article_id", getArticleById);
-server.get("/api/articles", getArticles);
-server.get("/api/articles/:article_id/comments", getCommentsByArticleId);
-
-server.post("/api/articles/:article_id/comments", postComments);
-
-server.patch("/api/articles/:article_id", patchArticle);
-
-server.delete("/api/comments/:comment_id", deleteComment);
+server.use("/api", apiRoutes);
+server.use("/api/topics", topicsRoutes);
+server.use("/api/users", usersRoutes);
+server.use("/api/articles", articlesRoutes);
+server.use("/api/comments", commentsRoutes);
 
 server.use((err, req, res, next) => {
   if (err.code === "22P02" || err.code === "23502" || err.code === "23503") {
