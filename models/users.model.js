@@ -8,12 +8,6 @@ exports.selectUsers = () => {
 };
 
 exports.selectUsername = (username) => {
-  if (username.length > 40) {
-    return Promise.reject({
-      status: 400,
-      msg: `Bad request`,
-    });
-  }
   return checkIfExists(username, "users", "username")
     .then(() => {
       return db.query("SELECT * FROM users WHERE username = $1", [username]);

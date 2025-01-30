@@ -80,6 +80,10 @@ The following is _not_ a comprehensive list! Its purpose is just to get the ball
 - Bad `username` (e.g. > 40 chars) -- 400 Bad Request
 - Well formed `username` that doesn't exist in the database (e.g. `/user4737248`) -- 404 Not Found
 
+### POST `/api/topics`
+
+- Missing parts of body (missing slug) -- 400 Bad Request
+
 ### PATCH `/api/comments/:comment_id`
 
 - Bad `comment_id` (e.g. `/dog`) -- 400 Bad Request
