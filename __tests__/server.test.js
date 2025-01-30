@@ -195,6 +195,40 @@ describe("GET /api/users", () => {
   });
 });
 
+describe("GET /api/users/:username", () => {
+  test("200: Responds with a user object", () => {
+    return request(server)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user).toMatchObject({
+          username: "butter_bridge",
+          name: "jonny",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+      });
+  });
+
+  test("400: Responds with an error when a username is bad formed(>40 chars)", () => {
+    return request(server)
+      .get("/api/users/xgj456ig4jpphqq1tyrtynu08za0rlaf9y1pfw3e0yvyxnfsgh")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+
+  test("404: Responds with an error when a user with such a username is not found", () => {
+    return request(server)
+      .get("/api/users/icecream_lover")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("username not found");
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id/comments", () => {
   test("200: Responds with an array of comment objects for the given article_id", () => {
     return request(server)

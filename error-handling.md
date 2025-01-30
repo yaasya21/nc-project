@@ -69,6 +69,11 @@ The following is _not_ a comprehensive list! Its purpose is just to get the ball
   - `topic` that is not in the database
   - `topic` that exists but does not have any articles associated with it
 
+### GET `/api/users/:username`
+
+- Bad `username` (e.g. > 40 chars) -- 400 Bad Request
+- Well formed `username` that doesn't exist in the database (e.g. `/user4737248`) -- 404 Not Found
+
 ### PATCH `/api/comments/:comment_id`
 
 ??
