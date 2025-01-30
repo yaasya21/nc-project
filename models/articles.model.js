@@ -69,3 +69,30 @@ exports.updateArticle = (article_id, newVote) => {
       return rows[0];
     });
 };
+
+exports.insertArticle = (body) => {
+  return checkIfExists(body.author, "users", "username")
+    .then(() => {
+      return checkIfExists(body.topic, "topics", "slug");
+    })
+    .then(() => {
+      let query = `INSERT INTO articles (title, topic, author, body`;
+      let values = [body.title, body.topic, body.author, body.body];
+
+      if (body.article_img_url) {
+        query += `, article_img_url`;
+        values.push(body.article_img_url);
+      }
+
+      query += `) VALUES ($1, $2, $3, $4`;
+      if (body.article_img_url) {
+        query += `, $5`;
+      }
+      query += `) RETURNING *;`;
+
+      return db.query(query, values);
+    })
+    .then(({ rows }) => {
+      return {...rows[0], comment_count: 0};
+    });
+};
