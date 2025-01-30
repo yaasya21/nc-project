@@ -118,6 +118,20 @@
       }
     }
   },
+  "PATCH /api/comments/:comment_id": {
+    "description": "serves an updated comment with a particular id",
+    "queries": [],
+    "exampleRequest": { "inc_votes": -15 }, 
+    "exampleResponse": {
+      "comment": {
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        "votes": 1,
+        "author": "butter_bridge",
+        "article_id": 9,
+        "created_at": 1586179020000,
+      }
+    }
+  },
   "DELETE /api/comments/:comment_id": {
     "description": "deletes a comment with a particular id",
     "queries": [],

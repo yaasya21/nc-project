@@ -396,6 +396,55 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: Responds with an updated comment", () => {
+    return request(server)
+      .patch("/api/comments/1")
+      .send({ inc_votes: -15 })
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment).toMatchObject({
+          comment_id: 1,
+          article_id: 9,
+          author: "butter_bridge",
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          created_at: expect.any(String),
+          votes: 1,
+        });
+      });
+  })
+
+  test("400: Responds with an appropriate status and error message when provided with a bad inc_votes", () => {
+    return request(server)
+      .patch("/api/comments/1")
+      .send({ inc_votes: "cat" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+
+  test("400: Responds with an error when a comment_id is bad request", () => {
+    return request(server)
+      .patch("/api/comments/one")
+      .send({ inc_votes: -100 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+
+  test("404: Responds with an error when a comment with such an id is not found", () => {
+    return request(server)
+      .patch("/api/comments/1567")
+      .send({ inc_votes: -100 })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("comment_id not found");
+      });
+  });
+});
+
 describe("DELETE /api/comments/:comment_id", () => {
   test("204: No content", () => {
     return request(server).delete("/api/comments/2").expect(204);

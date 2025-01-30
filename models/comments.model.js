@@ -26,6 +26,19 @@ exports.insertComment = (article_id, { username, body }) => {
     });
 };
 
+exports.updateComment = (comment_id, newVote) => {
+  return checkIfExists(comment_id, "comments", "comment_id")
+    .then(() => {
+      return db.query(
+        "UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *;",
+        [newVote, comment_id]
+      );
+    })
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
+
 exports.removeComment = (comment_id) => {
   return checkIfExists(comment_id, "comments", "comment_id").then(() => {
     return db.query("DELETE FROM comments WHERE comment_id = $1", [comment_id]);
