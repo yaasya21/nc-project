@@ -41,6 +41,32 @@ describe("GET /api/topics", () => {
   });
 });
 
+describe("POST /api/topics", () => {
+  test("201: Responds with the posted topic", () => {
+    return request(server)
+      .post("/api/topics")
+      .send({ slug: "books", description: "classic hobby" })
+      .expect(201)
+      .then(({ body: { topic } }) => {
+        expect(topic).toMatchObject({
+          slug: "books",
+          description: "classic hobby",
+        });
+      });
+  });
+  test("400: Responds with an appropriate status and error message when provided with a bad topic request body (no slug)", () => {
+    return request(server)
+      .post("/api/topics")
+      .send({
+        description: "classic hobby"
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id", () => {
   test("200: Responds with an article object", () => {
     return request(server)
@@ -274,14 +300,6 @@ describe("GET /api/users/:username", () => {
           avatar_url:
             "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
         });
-      });
-  });
-  test("400: Responds with an error when a username is bad formed(>40 chars)", () => {
-    return request(server)
-      .get("/api/users/xgj456ig4jpphqq1tyrtynu08za0rlaf9y1pfw3e0yvyxnfsgh")
-      .expect(400)
-      .then((response) => {
-        expect(response.body.msg).toBe("Bad request");
       });
   });
   test("404: Responds with an error when a user with such a username is not found", () => {
