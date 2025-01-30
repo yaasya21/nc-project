@@ -39,6 +39,20 @@ The following is _not_ a comprehensive list! Its purpose is just to get the ball
 
 ## Available Routes
 
+### GET `/api/articles`
+
+- Bad queries: -- 400 Bad Request
+  - `sort_by` a column that doesn't exist
+  - `order` !== "asc" / "desc"
+  - `topic` that is not in the database
+  - `topic` that exists but does not have any articles associated with it
+
+### POST `/api/articles`
+
+- Missing parts of body -- 400 Bad Request
+- `author` not found (e.g. `{ author: 54773457 }`) -- 404 Not Found
+- `topic` not found (e.g. `{ topic: "science }`) -- 404 Not Found
+
 ### GET `/api/articles/:article_id`
 
 - Bad `article_id` (e.g. `/dog`) -- 400 Bad Request
@@ -50,24 +64,16 @@ The following is _not_ a comprehensive list! Its purpose is just to get the ball
 - Well formed `article_id` that doesn't exist in the database (e.g. `/999999`) -- 404 Not Found
 - Invalid `inc_votes` (e.g. `{ inc_votes : "cat" }`) -- 400 Bad Request
 
-### POST `/api/articles/:article_id/comments`
-
-- Bad `article_id` (e.g. `/dog`) -- 400 Bad Request
-- Well formed `article_id` that doesn't exist in the database (e.g. `/999999`) -- 404 Not Found
-- Missing parts of body -- 400 Bad Request
-
 ### GET `/api/articles/:article_id/comments`
 
 - Bad `article_id` (e.g. `/dog`) -- 400 Bad Request
 - Well formed `article_id` that doesn't exist in the database (e.g. `/999999`) -- 404 Not Found
 
-### GET `/api/articles`
+### POST `/api/articles/:article_id/comments`
 
-- Bad queries: -- 400 Bad Request
-  - `sort_by` a column that doesn't exist
-  - `order` !== "asc" / "desc"
-  - `topic` that is not in the database
-  - `topic` that exists but does not have any articles associated with it
+- Bad `article_id` (e.g. `/dog`) -- 400 Bad Request
+- Well formed `article_id` that doesn't exist in the database (e.g. `/999999`) -- 404 Not Found
+- Missing parts of body -- 400 Bad Request
 
 ### GET `/api/users/:username`
 

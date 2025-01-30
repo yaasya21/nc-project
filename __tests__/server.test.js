@@ -61,7 +61,6 @@ describe("GET /api/articles/:article_id", () => {
         });
       });
   });
-
   test("400: Responds with an error when an id is bad request", () => {
     return request(server)
       .get("/api/articles/two")
@@ -70,7 +69,6 @@ describe("GET /api/articles/:article_id", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-
   test("404: Responds with an error when an article with such an id is not found", () => {
     return request(server)
       .get("/api/articles/567567")
@@ -176,6 +174,75 @@ describe("GET /api/articles", () => {
   });
 });
 
+describe("POST /api/articles", () => {
+  test("201: Responds with the posted article", () => {
+    return request(server)
+      .post("/api/articles")
+      .send({
+        title: "Living in the shadow of a great man",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "I find this existence challenging",
+      })
+      .expect(201)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: 14,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: expect.any(String),
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+          comment_count: 0,
+        });
+      });
+  });
+  test("400: Responds with an appropriate status and error message when provided with a bad request body (no body)", () => {
+    return request(server)
+      .post("/api/articles")
+      .send({
+        title: "Living in the shadow of a great man",
+        topic: "mitch",
+        author: "butter_bridge",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("404: Responds with an appropriate status and error message when provided with a bad request body (author not in the system)", () => {
+    return request(server)
+      .post("/api/articles")
+      .send({
+        title: "Living in the shadow of a great man",
+        topic: "mitch",
+        author: "icecream_lover",
+        body: "I find this existence challenging",
+      })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("username not found");
+      });
+  });
+  test("404: Responds with an appropriate status and error message when provided with a bad request body (topic not in the system)", () => {
+    return request(server)
+      .post("/api/articles")
+      .send({
+        title: "Living in the shadow of a great man",
+        topic: "science",
+        author: "butter_bridge",
+        body: "I find this existence challenging",
+      })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("slug not found");
+      });
+  });
+});
+
 describe("GET /api/users", () => {
   test("200: Responds with array of user objects", () => {
     return request(server)
@@ -209,7 +276,6 @@ describe("GET /api/users/:username", () => {
         });
       });
   });
-
   test("400: Responds with an error when a username is bad formed(>40 chars)", () => {
     return request(server)
       .get("/api/users/xgj456ig4jpphqq1tyrtynu08za0rlaf9y1pfw3e0yvyxnfsgh")
@@ -218,7 +284,6 @@ describe("GET /api/users/:username", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-
   test("404: Responds with an error when a user with such a username is not found", () => {
     return request(server)
       .get("/api/users/icecream_lover")
@@ -254,7 +319,6 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(comments).toEqual(sortedComments);
       });
   });
-
   test("400: Responds with an error when an id is bad request", () => {
     return request(server)
       .get("/api/articles/three/comments")
@@ -263,7 +327,6 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-
   test("404: Responds with an error when an article with such an id is not found", () => {
     return request(server)
       .get("/api/articles/3456467/comments")
@@ -272,7 +335,6 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("article_id not found");
       });
   });
-
   test("200: Responds with an emty array when the article exists but has not comments", () => {
     return request(server)
       .get("/api/articles/2/comments")
@@ -300,7 +362,6 @@ describe("POST /api/articles/:article_id/comments", () => {
         });
       });
   });
-
   test("400: Responds with an appropriate status and error message when provided with a bad comment (no usename)", () => {
     return request(server)
       .post("/api/articles/4/comments")
@@ -312,7 +373,6 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-
   test("400: Responds with an error when an id is bad request", () => {
     return request(server)
       .post("/api/articles/two/comments")
@@ -322,7 +382,6 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-
   test("400: Responds with an error when a user does not exist", () => {
     return request(server)
       .post("/api/articles/two/comments")
@@ -332,7 +391,6 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-
   test("404: Responds with an error when an article with such an id is not found", () => {
     return request(server)
       .post("/api/articles/868/comments")
@@ -412,7 +470,7 @@ describe("PATCH /api/comments/:comment_id", () => {
           votes: 1,
         });
       });
-  })
+  });
 
   test("400: Responds with an appropriate status and error message when provided with a bad inc_votes", () => {
     return request(server)
