@@ -168,5 +168,10 @@
     "description": "deletes a comment with a particular id",
     "queries": [],
     "exampleResponse": {}
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes an article with a particular id",
+    "queries": [],
+    "exampleResponse": {}
   }
 }

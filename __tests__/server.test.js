@@ -4,6 +4,7 @@ const request = require("supertest");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
 const db = require("../db/connection");
+const { checkIfExists } = require("../utils/checkIfExists");
 
 beforeAll(() => seed(testData));
 afterAll(() => db.end());
@@ -58,7 +59,7 @@ describe("POST /api/topics", () => {
     return request(server)
       .post("/api/topics")
       .send({
-        description: "classic hobby"
+        description: "classic hobby",
       })
       .expect(400)
       .then((response) => {
@@ -269,6 +270,37 @@ describe("POST /api/articles", () => {
   });
 });
 
+describe("DELETE /api/articles/:article_id", () => {
+  test("204: No content", () => {
+    request(server)
+      .delete("/api/articles/3")
+      .expect(204)
+      .then(() => {
+        return expect(
+          checkIfExists(3, "comments", "article_id")
+        ).rejects.toMatchObject({
+          status: 404,
+          msg: "article_id not found",
+        });
+      });
+  });
+  test("400: Responds with an error when an id is bad request", () => {
+    return request(server)
+      .delete("/api/articles/three")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+  test("404: Responds with an error when an article with such an id is not found", () => {
+    return request(server)
+      .delete("/api/articles/9999")
+      .then((response) => {
+        expect(response.body.msg).toBe("article_id not found");
+      });
+  });
+});
+
 describe("GET /api/users", () => {
   test("200: Responds with array of user objects", () => {
     return request(server)
@@ -315,10 +347,10 @@ describe("GET /api/users/:username", () => {
 describe("GET /api/articles/:article_id/comments", () => {
   test("200: Responds with an array of comment objects for the given article_id", () => {
     return request(server)
-      .get("/api/articles/3/comments")
+      .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
-        expect(comments.length).toBe(2);
+        expect(comments.length).toBe(11);
 
         comments.forEach((comment) => {
           expect(comment).toMatchObject({
@@ -327,7 +359,7 @@ describe("GET /api/articles/:article_id/comments", () => {
             created_at: expect.any(String),
             author: expect.any(String),
             body: expect.any(String),
-            article_id: 3,
+            article_id: 1,
           });
         });
 
@@ -440,7 +472,6 @@ describe("PATCH /api/articles/:article_id", () => {
         });
       });
   });
-
   test("400: Responds with an appropriate status and error message when provided with a bad inc_votes", () => {
     return request(server)
       .patch("/api/articles/1")
@@ -450,7 +481,6 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-
   test("400: Responds with an error when an id is bad request", () => {
     return request(server)
       .patch("/api/articles/one")
@@ -460,7 +490,6 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-
   test("404: Responds with an error when an article with such an id is not found", () => {
     return request(server)
       .patch("/api/articles/567")
@@ -489,7 +518,6 @@ describe("PATCH /api/comments/:comment_id", () => {
         });
       });
   });
-
   test("400: Responds with an appropriate status and error message when provided with a bad inc_votes", () => {
     return request(server)
       .patch("/api/comments/1")
@@ -499,7 +527,6 @@ describe("PATCH /api/comments/:comment_id", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-
   test("400: Responds with an error when a comment_id is bad request", () => {
     return request(server)
       .patch("/api/comments/one")
@@ -509,7 +536,6 @@ describe("PATCH /api/comments/:comment_id", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-
   test("404: Responds with an error when a comment with such an id is not found", () => {
     return request(server)
       .patch("/api/comments/1567")
@@ -525,7 +551,6 @@ describe("DELETE /api/comments/:comment_id", () => {
   test("204: No content", () => {
     return request(server).delete("/api/comments/2").expect(204);
   });
-
   test("400: Responds with an error when an id is bad request", () => {
     return request(server)
       .delete("/api/comments/two")
@@ -534,7 +559,6 @@ describe("DELETE /api/comments/:comment_id", () => {
         expect(response.body.msg).toBe("Bad request");
       });
   });
-
   test("404: Responds with an error when an article with such an id is not found", () => {
     return request(server)
       .delete("/api/comments/9999")

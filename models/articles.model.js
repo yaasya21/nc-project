@@ -93,6 +93,20 @@ exports.insertArticle = (body) => {
       return db.query(query, values);
     })
     .then(({ rows }) => {
-      return {...rows[0], comment_count: 0};
+      return { ...rows[0], comment_count: 0 };
+    });
+};
+
+exports.removeArticle = (article_id) => {
+  return checkIfExists(article_id, "articles", "article_id")
+    .then(() => {
+      return db.query("DELETE FROM comments WHERE article_id = $1", [
+        article_id,
+      ]);
+    })
+    .then(() => {
+      return db.query("DELETE FROM articles WHERE article_id = $1", [
+        article_id,
+      ]);
     });
 };

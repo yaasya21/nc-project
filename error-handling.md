@@ -47,22 +47,15 @@ The following is _not_ a comprehensive list! Its purpose is just to get the ball
   - `topic` that is not in the database
   - `topic` that exists but does not have any articles associated with it
 
-### POST `/api/articles`
-
-- Missing parts of body -- 400 Bad Request
-- `author` not found (e.g. `{ author: 54773457 }`) -- 404 Not Found
-- `topic` not found (e.g. `{ topic: "science }`) -- 404 Not Found
-
 ### GET `/api/articles/:article_id`
 
 - Bad `article_id` (e.g. `/dog`) -- 400 Bad Request
 - Well formed `article_id` that doesn't exist in the database (e.g. `/999999`) -- 404 Not Found
 
-### PATCH `/api/articles/:article_id`
+### GET `/api/users/:username`
 
-- Bad `article_id` (e.g. `/dog`) -- 400 Bad Request
-- Well formed `article_id` that doesn't exist in the database (e.g. `/999999`) -- 404 Not Found
-- Invalid `inc_votes` (e.g. `{ inc_votes : "cat" }`) -- 400 Bad Request
+- Bad `username` (e.g. > 40 chars) -- 400 Bad Request
+- Well formed `username` that doesn't exist in the database (e.g. `/user4737248`) -- 404 Not Found
 
 ### GET `/api/articles/:article_id/comments`
 
@@ -75,14 +68,21 @@ The following is _not_ a comprehensive list! Its purpose is just to get the ball
 - Well formed `article_id` that doesn't exist in the database (e.g. `/999999`) -- 404 Not Found
 - Missing parts of body -- 400 Bad Request
 
-### GET `/api/users/:username`
+### POST `/api/articles`
 
-- Bad `username` (e.g. > 40 chars) -- 400 Bad Request
-- Well formed `username` that doesn't exist in the database (e.g. `/user4737248`) -- 404 Not Found
+- Missing parts of body -- 400 Bad Request
+- `author` not found (e.g. `{ author: 54773457 }`) -- 404 Not Found
+- `topic` not found (e.g. `{ topic: "science }`) -- 404 Not Found
 
 ### POST `/api/topics`
 
 - Missing parts of body (missing slug) -- 400 Bad Request
+
+### PATCH `/api/articles/:article_id`
+
+- Bad `article_id` (e.g. `/dog`) -- 400 Bad Request
+- Well formed `article_id` that doesn't exist in the database (e.g. `/999999`) -- 404 Not Found
+- Invalid `inc_votes` (e.g. `{ inc_votes : "cat" }`) -- 400 Bad Request
 
 ### PATCH `/api/comments/:comment_id`
 
@@ -94,3 +94,8 @@ The following is _not_ a comprehensive list! Its purpose is just to get the ball
 
 - Bad `comment_id` (e.g. `/dog`) -- 400 Bad Request
 - Well formed `:comment_id` that doesn't exist in the database (e.g. `/999999`) -- 404 Not Found
+
+### DELETE `/api/articles/:article_id`
+
+- Bad `article_id` (e.g. `/one`) -- 400 Bad Request
+- Well formed `article_id` that doesn't exist in the database (e.g. `/999999`) -- 404 Not Found
