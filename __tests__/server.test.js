@@ -207,7 +207,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body: { articles, total_count } }) => {
         expect(articles.length).toBe(limit);
-        expect(total_count).toBe(13); 
+        expect(total_count).toBe(13);
       });
   });
   test("200: Returns 0 articles if page*limit exides amount of articles", () => {
@@ -218,7 +218,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body: { articles, total_count } }) => {
         expect(articles.length).toBe(0);
-        expect(total_count).toBe(13); 
+        expect(total_count).toBe(13);
       });
   });
 });
@@ -372,7 +372,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
-        expect(comments.length).toBe(11);
+        expect(comments.length).toBe(10);
 
         comments.forEach((comment) => {
           expect(comment).toMatchObject({
@@ -413,6 +413,28 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body: { comments } }) => {
         expect(comments).toEqual([]);
+      });
+  });
+  test("200: Returns correct number of comments for limit and page", () => {
+    const limit = 5;
+    const page = 2;
+    return request(server)
+      .get(`/api/articles/1/comments?limit=${limit}&p=${page}`)
+      .expect(200)
+      .then(({ body: { comments, total_count } }) => {
+        expect(comments.length).toBe(limit);
+        expect(total_count).toBe(11);
+      });
+  });
+  test("200: Returns 0 comments if page*limit exides amount of comments", () => {
+    const limit = 10;
+    const page = 3;
+    return request(server)
+      .get(`/api/articles/1/comments?limit=${limit}&p=${page}`)
+      .expect(200)
+      .then(({ body: { comments, total_count } }) => {
+        expect(comments.length).toBe(0);
+        expect(total_count).toBe(11);
       });
   });
 });
