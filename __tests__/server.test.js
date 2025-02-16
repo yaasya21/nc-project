@@ -112,7 +112,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
 
         articles.forEach((article) => {
           expect(article).not.toHaveProperty("body");
@@ -197,6 +197,28 @@ describe("GET /api/articles", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("slug not found");
+      });
+  });
+  test("200: Returns correct number of articles for limit and page", () => {
+    const limit = 5;
+    const page = 2;
+    return request(server)
+      .get(`/api/articles?limit=${limit}&p=${page}`)
+      .expect(200)
+      .then(({ body: { articles, total_count } }) => {
+        expect(articles.length).toBe(limit);
+        expect(total_count).toBe(13); 
+      });
+  });
+  test("200: Returns 0 articles if page*limit exides amount of articles", () => {
+    const limit = 10;
+    const page = 3;
+    return request(server)
+      .get(`/api/articles?limit=${limit}&p=${page}`)
+      .expect(200)
+      .then(({ body: { articles, total_count } }) => {
+        expect(articles.length).toBe(0);
+        expect(total_count).toBe(13); 
       });
   });
 });
