@@ -1,16 +1,24 @@
 const db = require("../db/connection");
 const { checkIfExists } = require("../utils/checkIfExists");
 
-exports.selectCommentsByArticleId = (article_id) => {
-  return checkIfExists(article_id, "articles", "article_id")
-    .then(() => {
-      return db.query("SELECT * FROM comments WHERE article_id = $1", [
-        article_id,
-      ]);
-    })
-    .then(({ rows }) => {
-      return rows;
+exports.selectCommentsByArticleId = (article_id, limit = 10, page = 1) => {
+  return checkIfExists(article_id, "articles", "article_id").then(() => {
+    const offset = (page - 1) * limit;
+    const queryParams = [article_id, limit, offset];
+
+    let query = `SELECT * FROM comments WHERE article_id = $1 LIMIT $2 OFFSET $3`;
+
+    let countQuery = `SELECT COUNT(*) AS total_count FROM comments WHERE article_id = $1`;
+    return Promise.all([
+      db.query(query, queryParams),
+      db.query(countQuery, [article_id]),
+    ]).then(([commentsResult, countResult]) => {
+      const comments = commentsResult.rows;
+      const total_count = parseInt(countResult.rows[0].total_count);
+
+      return { comments, total_count };
     });
+  });
 };
 
 exports.insertComment = (article_id, { username, body }) => {

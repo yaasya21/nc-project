@@ -7,9 +7,14 @@ const {
 
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
-  selectCommentsByArticleId(article_id)
-    .then((comments) => {
-      res.status(200).send({ comments: comments });
+  const { limit, p } = req.query;
+
+  const parsedLimit = limit && parseInt(limit);
+  const parsedPage = p && parseInt(p);
+
+  selectCommentsByArticleId(article_id, parsedLimit, parsedPage)
+    .then(({ comments, total_count }) => {
+      res.status(200).send({ comments, total_count });
     })
     .catch((err) => {
       next(err);
