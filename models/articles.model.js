@@ -17,42 +17,77 @@ exports.selectArticleById = (article_id) => {
 exports.selectArticles = (
   sortBy = "created_at",
   order = "desc",
-  topic = null
+  topic = null,
+  limit = 10,
+  page = 1
 ) => {
   const validSortBy = ["author", "title", "topic", "created_at", "votes"];
   const validOrder = ["asc", "desc"];
+
   if (!validSortBy.includes(sortBy.toLowerCase())) {
     return Promise.reject({
       status: 400,
       msg: `Invalid sort_by parameter: ${sortBy}`,
     });
   }
+
   if (!validOrder.includes(order.toLowerCase())) {
     return Promise.reject({
       status: 400,
       msg: `Invalid order parameter: ${order}`,
     });
   }
+
   const orderByClause = `a.${sortBy} ${order}`;
   let query = `SELECT a.author, a.title, a.article_id, a.topic, a.created_at, a.votes, a.article_img_url, COUNT(*) AS comment_count FROM articles AS a LEFT JOIN comments AS c ON a.article_id=c.article_id`;
 
-  if (topic) {
-    query += ` WHERE a.topic = $1`;
-  }
-
-  query += ` GROUP BY a.article_id ORDER BY ${orderByClause}`;
+  const queryParams = [];
 
   if (topic) {
     return checkIfExists(topic, "topics", "slug")
       .then(() => {
-        return db.query(query, [topic]);
-      })
-      .then(({ rows }) => {
-        return rows;
+        query += ` WHERE a.topic = $1`;
+        queryParams.push(topic);
+
+        query += ` GROUP BY a.article_id ORDER BY ${orderByClause}`;
+
+        let countQuery = `SELECT COUNT(*) AS total_count FROM articles AS a WHERE a.topic = $1`; // Add where clause
+
+        const offset = (page - 1) * limit;
+        query += ` LIMIT $${queryParams.length + 1} OFFSET $${
+          queryParams.length + 2
+        }`;
+        queryParams.push(limit, offset);
+
+        return Promise.all([
+          db.query(query, queryParams),
+          db.query(countQuery, [topic]),
+        ]).then(([articlesResult, countResult]) => {
+          const articles = articlesResult.rows;
+          const total_count = parseInt(countResult.rows[0].total_count);
+
+          return { articles, total_count };
+        });
       });
   } else {
-    return db.query(query).then(({ rows }) => {
-      return rows;
+    query += ` GROUP BY a.article_id ORDER BY ${orderByClause}`;
+
+    let countQuery = `SELECT COUNT(*) AS total_count FROM articles AS a`;
+
+    const offset = (page - 1) * limit;
+    query += ` LIMIT $${queryParams.length + 1} OFFSET $${
+      queryParams.length + 2
+    }`;
+    queryParams.push(limit, offset);
+
+    return Promise.all([
+      db.query(query, queryParams),
+      db.query(countQuery),
+    ]).then(([articlesResult, countResult]) => {
+      const articles = articlesResult.rows;
+      const total_count = parseInt(countResult.rows[0].total_count); 
+
+      return { articles, total_count };
     });
   }
 };

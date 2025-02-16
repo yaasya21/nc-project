@@ -18,10 +18,14 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order, topic } = req.query;
-  selectArticles(sort_by, order, topic)
-    .then((articles) => {
-      res.status(200).send({ articles: articles });
+  const { sort_by, order, topic, limit, p } = req.query;
+
+  const parsedLimit = limit && parseInt(limit);
+  const parsedPage = p && parseInt(p);
+
+  selectArticles(sort_by, order, topic, parsedLimit, parsedPage)
+    .then(({ articles, total_count }) => {
+      res.status(200).send({ articles, total_count });
     })
     .catch((err) => {
       next(err);
