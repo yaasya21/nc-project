@@ -28,12 +28,13 @@
     "jest-extended": "^2.0.0"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "expres": "^0.0.5",
     "express": "^4.21.2",
     "pg": "^8.7.3",
-    "supertest": "^7.0.0",
-    "pg-format": "^1.0.4"
+    "pg-format": "^1.0.4",
+    "supertest": "^7.0.0"
   },
   "jest": {
     "setupFilesAfterEnv": [
