@@ -21,7 +21,7 @@ exports.selectArticles = (
   limit = 10,
   page = 1
 ) => {
-  const validSortBy = ["author", "title", "topic", "created_at", "votes"];
+  const validSortBy = ["author", "title", "topic", "created_at", "votes", "comment_count"];
   const validOrder = ["asc", "desc"];
 
   if (!validSortBy.includes(sortBy.toLowerCase())) {
