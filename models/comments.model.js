@@ -6,7 +6,11 @@ exports.selectCommentsByArticleId = (article_id, limit = 10, page = 1) => {
     const offset = (page - 1) * limit;
     const queryParams = [article_id, limit, offset];
 
-    let query = `SELECT * FROM comments WHERE article_id = $1 LIMIT $2 OFFSET $3`;
+    let query = `SELECT * 
+      FROM comments 
+      WHERE article_id = $1 
+      ORDER BY created_at DESC
+      LIMIT $2 OFFSET $3`;
 
     let countQuery = `SELECT COUNT(*) AS total_count FROM comments WHERE article_id = $1`;
     return Promise.all([
