@@ -38,7 +38,7 @@ exports.selectArticles = (
     });
   }
 
-  const orderByClause = `a.${sortBy} ${order}`;
+  const orderByClause = sortBy === "comment_count" ? `${sortBy} ${order}` : `a.${sortBy} ${order}`;
   let query = `SELECT a.author, a.title, a.article_id, a.topic, a.created_at, a.votes, a.article_img_url, COUNT(*) AS comment_count FROM articles AS a LEFT JOIN comments AS c ON a.article_id=c.article_id`;
 
   const queryParams = [];
